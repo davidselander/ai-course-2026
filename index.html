@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI for Architects | The Global Standard</title>
+    <style>
+    /* --- DESIGN SYSTEM (Swiss Style) --- */
+    :root {
+        --bg: #ffffff;
+        --text: #111111;
+        --gray-light: #f7f7f7;
+        --gray-border: #e0e0e0;
+        --accent: #0044cc;
+        --spacing: 2rem;
+        /* UPDATED: Wider Container */
+        --container-width: 96vw; 
+        --sidebar-width: 350px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+        font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        overflow-x: hidden;
+        padding-bottom: 4rem;
+    }
+
+    /* --- UTILS --- */
+    h1, h2, h3, h4, button { letter-spacing: -0.02em; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* --- NAVIGATION --- */
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2vw; /* Matches container width logic */
+        border-bottom: 1px solid var(--gray-border);
+        position: sticky;
+        top: 0;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        z-index: 100;
+    }
+    .logo { font-weight: 700; font-size: 1.1rem; text-transform: uppercase; }
+
+    .nav-links button { background: none; border: none; font-size: 0.9rem; margin-left: 2rem; color: #666; transition: color 0.2s; }
+    .nav-links button:hover { color: black; }
+    .nav-links .btn-primary { 
+        background: var(--text); color: white !important; padding: 0.6rem 1.2rem; border-radius: 4px; font-weight: 500;
+    }
+    .nav-links .btn-primary:hover { background: #000; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+    /* --- HERO SECTION (Full Screen Landing) --- */
+    header { 
+        height: 85vh; 
+        width: 100%;
+        max-width: var(--container-width); 
+        margin: 0 auto; 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 4rem;
+        align-items: center; 
+        padding: 0 2vw;
+    }
+    
+    .hero-content { max-width: 650px; }
+    
+    /* Updated Typography for Swiss Style */
+    h1 { 
+        font-size: 4.5rem; 
+        line-height: 0.95; 
+        letter-spacing: -0.04em; 
+        margin-bottom: 2rem; 
+        font-weight: 700; 
+        text-transform: uppercase; /* Stronger visual weight */
+    }
+    .subtitle { font-size: 1.15rem; color: #333; margin-bottom: 2.5rem; max-width: 90%; line-height: 1.4; }
+    
+    /* New Label Style with Line */
+    .prop-label {
+        color: var(--accent);
+        font-size: 0.75rem; font-weight: 700; 
+        text-transform: uppercase; letter-spacing: 0.1em;
+        margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;
+    }
+    .prop-label::before {
+        content: ''; display: block; width: 40px; height: 2px; background: var(--accent);
+    }
+
+    /* Primary Hero Button (Solid Black) */
+    .btn-hero {
+        background: var(--text); color: white;
+        padding: 1rem 2rem; border-radius: 0; 
+        font-size: 1rem; border: none; font-weight: 500;
+        transition: transform 0.2s;
+    }
+    .btn-hero:hover { transform: translateY(-2px); background: black; }
+    
+    .hero-video-container {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #000;
+        /* Orthogonal - No radius */
+        border: 1px solid #000;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+    }
+    .play-btn-large {
+        width: 70px; height: 70px; background: white; 
+        /* Orthogonal - Square button */
+        border-radius: 0; 
+        display: flex; align-items: center; justify-content: center;
+        color: black; font-size: 1.5rem; border: 1px solid black;
+        transition: background 0.2s, color 0.2s;
+    }
+    .hero-video-container:hover .play-btn-large { background: var(--accent); color: white; border-color: var(--accent); transform: none; }
+
+    /* --- BENTO GRID PAGE (Swiss Style Update) --- */
+    .grid-wrapper {
+        position: fixed; 
+        top: 0; left: 0; 
+        width: 100vw; height: 100vh;
+        background: var(--bg);
+        z-index: 400; 
+        overflow-y: auto;
+        /* UPDATED: Reduced top padding to fit everything on one screen */
+        padding: 5rem 4vw 2rem 4vw;
+        
+        transform: translateY(100%); 
+        opacity: 0;
+        transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.5s ease;
+    }
+
+    .grid-wrapper.active {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        /* UPDATED: Tighter gap to save vertical space */
+        gap: 1.5rem; 
+        max-width: var(--container-width);
+        margin: 0 auto;
+    }
+    
+    .card { 
+        position: relative; 
+        background: white; 
+        border: 1px solid #e0e0e0; 
+        /* UPDATED: Doubled the offset padding */
+        padding: 1.5rem; 
+        border-radius: 0; 
+        cursor: pointer; 
+        display: flex;
+        flex-direction: column-reverse; 
+        gap: 0.8rem; /* Slightly reduced gap between text and image */
+        transition: border-color 0.2s;
+    }
+    
+    .card:hover { border-color: #999; }
+    
+    /* 1. The Image Container */
+    .card-visual { 
+        position: relative; 
+        width: 100%; 
+        /* UPDATED: 16/9 Ratio makes the cards shorter to fit in viewport */
+        aspect-ratio: 16/9; 
+        overflow: hidden;
+        background: #f0f0f0;
+        transition: transform 0.4s ease-out;
+    }
+    
+    /* Hover: The image box grows slightly inside the frame */
+    .card:hover .card-visual { transform: scale(1.02); }
+
+    .card-visual img {
+        width: 100%; height: 100%; 
+        object-fit: cover; 
+        display: block; 
+    }
+
+    /* 2. The Text */
+    .card-content { 
+        position: relative;
+        padding: 0; 
+        background: white; 
+        z-index: 2;
+    }
+
+    .card h3 { 
+        font-size: 1rem; /* Slightly smaller to save space */
+        font-weight: 700; 
+        margin-bottom: 0.3rem; 
+        color: var(--text); 
+        line-height: 1.2;
+        text-transform: uppercase;
+    }
+    .card p { 
+        font-size: 0.85rem; 
+        color: #666; 
+        font-weight: 400; 
+        margin: 0; 
+        line-height: 1.4;
+    }
+    
+    .module-tag { 
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+        color: var(--accent); 
+        font-size: 0.65rem; 
+        margin-bottom: 0.3rem; 
+        font-weight: 700; 
+        letter-spacing: 0.05em; 
+        text-transform: uppercase; 
+    }
+
+    /* Mobile */
+    @media (max-width: 900px) {
+        .course-grid { grid-template-columns: 1fr; gap: 2rem; }
+        .hero-video-container { aspect-ratio: 16/9; }
+        header { grid-template-columns: 1fr; gap: 2rem; height: auto; padding-top: 6rem; }
+        .grid-wrapper { padding: 6rem 4vw; }
+    }
+
+    /* --- FOOTER --- */
+    footer {
+        max-width: var(--container-width); margin: 0 auto; padding: 2rem 0;
+        display: flex; justify-content: space-between; color: #888; font-size: 0.85rem;
+        border-top: 1px solid #eee;
+    }
+
+    /* --- DARK COURSE PLAYER (4K Optimized) --- */
+.course-player-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #050505; 
+    z-index: 500; display: block;
+    transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.8, 0, 0.2, 1);
+    display: flex; 
+}
+.course-player-overlay.active { transform: translateY(0); }
+
+/* Left Sidebar (Restored Original Design) */
+.player-sidebar {
+    width: 350px; flex-shrink: 0;
+    background: #fcfcfc; border-right: 1px solid #e0e0e0;
+    display: flex; flex-direction: column; height: 100vh;
+}
+.module-list { overflow-y: auto; flex: 1; padding-bottom: 2rem; }
+
+/* New Sidebar Section Headers */
+.sidebar-section-title {
+    padding: 1.5rem 2rem 0.5rem 2rem;
+    font-size: 0.7rem; font-weight: 700; color: #999;
+    letter-spacing: 0.05em; text-transform: uppercase;
+}
+
+.module-item {
+    padding: 1rem 2rem; border-bottom: 1px solid #eee; cursor: pointer;
+    transition: background 0.2s; display: flex; justify-content: space-between; align-items: center;
+    color: #333;
+}
+.module-item:hover { background: #f0f0f0; }
+.module-item.active { background: white; border-left: 4px solid var(--accent); }
+.module-item h4 { font-size: 0.85rem; font-weight: 600; margin: 0 0 0.2rem 0; }
+.module-item span { font-size: 0.75rem; color: #888; }
+
+/* UPDATED: Play Icon (Triangle Only) */
+.play-icon { 
+    width: auto; height: auto; 
+    border: none; background: transparent; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 0.8rem; color: var(--accent);
+}
+
+/* Right Main Area (Dark) */
+.player-main { 
+    flex: 1; background: #0a0a0a; color: white; 
+    overflow-y: auto; display: flex; flex-direction: column; 
+}
+
+.player-top-nav {
+    padding: 1.5rem 3rem; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #222; background: #0a0a0a; position: sticky; top: 0; z-index: 50;
+}
+.back-link { color: #888; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
+.back-link:hover { color: white; }
+
+/* The "Stage" */
+.player-stage {
+    padding: 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+    align-items: start; border-bottom: 1px solid #222;
+}
+.media-container {
+    width: 100%; aspect-ratio: 16/9; background: #000;
+    border: 1px solid #222; border-radius: 8px; overflow: hidden;
+    position: relative; 
+    /* UPDATED: Removed large shadow to prevent it darkening the text below */
+    box-shadow: none; 
+}
+.stage-description { 
+    margin-top: 1.5rem; 
+    /* UPDATED: Lighter, uniform grey for all text */
+    color: #d0d0d0; 
+    font-size: 0.95rem; 
+    line-height: 1.6; 
+}
+
+/* Tabs & License */
+.player-content-wrapper { padding: 3rem; max-width: 1600px; margin: 0; }
+.dark-tabs { display: flex; gap: 2rem; border-bottom: 1px solid #333; margin-bottom: 2rem; }
+.dark-tab { padding-bottom: 1rem; cursor: pointer; font-size: 1rem; color: #666; border-bottom: 2px solid transparent; }
+.dark-tab:hover { color: #ccc; }
+.dark-tab.active { color: white; border-bottom-color: white; }
+.license-block { background: #111; border: 1px solid #333; padding: 2rem; border-radius: 8px; font-family: monospace; color: #aaa; font-size: 0.85rem; line-height: 1.8; }
+
+/* Pricing Table Styles */
+.pricing-table { width: 100%; border-collapse: collapse; text-align: left; color: #ccc; font-size: 0.9rem; }
+.pricing-table th { border-bottom: 1px solid #333; padding: 1rem 0; color: white; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.pricing-table td { border-bottom: 1px solid #222; padding: 1.2rem 0; vertical-align: middle; }
+.tool-icon { width: 32px; height: 32px; background: #222; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: 700; color: white; font-size: 0.7rem; }
+.price-tag { color: white; font-weight: 600; font-family: monospace; font-size: 1rem; }
+
+/* --- INTERACTIVE TOYS (Consolidated & Fixed) --- */
+.ba-container { 
+    position: relative; width: 100%; height: 100%; 
+    background: #111; overflow: hidden; cursor: col-resize; 
+    user-select: none; -webkit-user-select: none;
+}
+/* UPDATED: Images are now <img> tags, not divs */
+.ba-img { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    object-fit: cover; pointer-events: none; 
+}
+/* The top image will be clipped by JS */
+.ba-img.after { z-index: 2; }
+.ba-img.before { z-index: 1; }
+
+.ba-handle { 
+    position: absolute; top: 0; bottom: 0; left: 50%; 
+    width: 2px; background: white; z-index: 10; 
+    display: flex; align-items: center; justify-content: center; pointer-events: none;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+/* New Arrows style (Bigger) */
+.ba-arrows {
+    color: white; 
+    font-size: 2.5rem; /* Increased size */
+    font-weight: 300; 
+    line-height: 1;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    padding-bottom: 8px; /* Adjusted to center optically */
+}
+
+/* Floating "Before / After" Pills */
+.ba-pill {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.85); 
+    backdrop-filter: blur(4px);
+    color: #111;
+    padding: 0.2rem 1.0rem; border-radius: 20px;
+    font-size: 0.9rem; font-weight: 600;
+    pointer-events: none; z-index: 5;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-family: 'Inter', sans-serif;
+}
+.ba-pill.p-before { left: 2rem; }
+.ba-pill.p-after { right: 2rem; }
+
+/* New Styles for Vibe Coding Controls */
+.vibe-nav {
+    position: absolute; bottom: 1rem; width: 100%; 
+    display: flex; justify-content: center; gap: 1rem; z-index: 20;
+}
+.vibe-btn {
+    background: rgba(0,0,0,0.6); color: #ccc; border: 1px solid #444;
+    padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem;
+    cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px);
+}
+.vibe-btn:hover { background: white; color: black; }
+.vibe-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+/* 3D Cube Scene */
+.vibe-scene { 
+    width: 100%; 
+    height: 100%; 
+    background: #0a0a0a; 
+    perspective: 1000px; 
+    display: flex; align-items: center; justify-content: center; 
+    cursor: grab; 
+    user-select: none;
+}
+.vibe-scene:active { cursor: grabbing; }
+.vibe-cube { 
+    width: 100px; height: 200px; position: relative; 
+    transform-style: preserve-3d; 
+    transform: rotateX(-20deg) rotateY(45deg); 
+}
+.face { 
+    position: absolute; width: 100px; height: 200px; 
+    background: rgba(0, 68, 204, 0.2); 
+    border: 1px solid rgba(0, 68, 204, 0.8); 
+    display: flex; align-items: center; justify-content: center; 
+    color: white; font-weight: bold; 
+    text-shadow: 0 0 10px var(--accent); 
+    backface-visibility: visible;
+}
+.face-front { transform: translateZ(50px); }
+.face-back { transform: rotateY(180deg) translateZ(50px); }
+.face-right { transform: rotateY(90deg) translateZ(50px); width: 100px; }
+.face-left { transform: rotateY(-90deg) translateZ(50px); width: 100px; }
+.face-top { transform: rotateX(90deg) translateZ(50px); height: 100px; background: rgba(255,255,255,0.1); }
+.face-bottom { transform: rotateX(-90deg) translateZ(150px); height: 100px; }
+
+    /* --- DASHBOARD STYLES (Popup Version) --- */
+    #dashboard-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255,255,255,0.95); /* Overlay */
+        z-index: 3000;
+        display: none; 
+        justify-content: center; align-items: center;
+        transform: none !important; /* Disables the old slide-up animation */
+    }
+    #dashboard-overlay.active { display: flex !important; }
+
+    /* The White Box */
+    .dash-modal-box {
+        background: white;
+        width: 1100px; max-width: 95vw; max-height: 90vh;
+        border: 1px solid #ccc; border-radius: 8px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        padding: 3rem;
+        overflow-y: auto;
+        position: relative;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    /* Internal Dashboard Elements */
+    .dash-header {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 2rem;
+    }
+    .stats-grid {
+        display: grid; grid-template-columns: repeat(4, 1fr); 
+        gap: 1.5rem; margin-bottom: 3rem;
+    }
+    .stat-card {
+        background: #fcfcfc; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;
+    }
+    .stat-number { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1; color: var(--text); }
+    .stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    
+    .team-section { border: 1px solid #eee; border-radius: 12px; padding: 2rem; }
+    .team-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    .team-table th { text-align: left; color: #999; font-size: 0.75rem; text-transform: uppercase; padding-bottom: 1rem; border-bottom: 1px solid #eee; font-weight: 600; }
+    .team-table td { padding: 1.2rem 0; border-bottom: 1px solid #f5f5f5; vertical-align: middle; color: #333; font-size: 0.9rem; }
+    
+    .btn-generate {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: white; border: 1px solid #e0e0e0; padding: 0.5rem 1rem;
+        border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: 0.2s;
+        color: #555; font-weight: 500;
+    }
+    .btn-generate:hover { border-color: black; color: black; }
+    .btn-generate.success { border-color: #00c853; color: #00c853; background: #f0fdf4; }
+
+    @media (max-width: 900px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+
+    
+
+    /* Responsive Dashboard */
+    @media (max-width: 900px) {
+        .stats-grid { grid-template-columns: 1fr 1fr; }
+        .dash-header { flex-direction: column; gap: 1rem; }
+    }
+
+    /* --- DEEP RESEARCH DIAGRAM --- */
+    .dr-container {
+        width: 100%; height: 100%;
+        padding: 3rem;
+        display: flex; flex-direction: column; gap: 2rem;
+        background: #111;
+    }
+    .dr-flow-row {
+        display: flex; gap: 1.5rem; flex: 1; align-items: center;
+    }
+    .dr-box {
+        flex: 1; height: 100%;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        padding: 1.5rem;
+        display: flex; flex-direction: column;
+        position: relative;
+        transition: border-color 0.2s;
+    }
+    .dr-box:hover { border-color: #666; }
+    
+    .dr-arrow-right {
+        color: #444; font-size: 1.5rem; padding-bottom: 2rem;
+    }
+    
+    .dr-label {
+        font-size: 0.7rem; font-weight: 700; 
+        color: #666; margin-bottom: 1rem;
+        text-transform: uppercase; letter-spacing: 0.05em;
+        border-bottom: 1px solid #252525; padding-bottom: 0.8rem;
+    }
+    
+    .dr-content {
+        color: #ccc; font-size: 0.95rem; line-height: 1.6;
+        font-family: 'Inter', sans-serif;
+    }
+    .dr-highlight { color: #ffffff; font-weight: 500; font-family: monospace; display: block; margin-top: 0.5rem; }
+
+    /* Resource Links in Downloads Tab */
+    .resource-link {
+        display: flex; align-items: center; justify-content: space-between;
+        background: #1a1a1a; border: 1px solid #333;
+        padding: 1rem; border-radius: 6px;
+        color: white !important; /* Force White Text */
+        text-decoration: none; font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+    .resource-link:hover { border-color: #666; background: #222; transform: translateY(-2px); }
+    
+    /* Sub-text styling inside the link */
+    .resource-link span { color: #888; font-size: 0.8rem; display: block; margin-top: 2px; }
+
+    /* --- PAYMENT MODAL STYLES --- */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: none; z-index: 600; justify-content: center; align-items: center; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: white; border: 1px solid #ccc; padding: 3rem; width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; }
+    .payment-split { display: grid; grid-template-columns: 2fr 3fr; min-height: 550px; }
+    .payment-left { background: #f8f9fa; padding: 3rem; border-right: 1px solid #eee; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+    .paddle-box { background: white; border: 1px solid #d0e3ff; border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 68, 204, 0.05); position: relative; z-index: 2; }
+    .paddle-badge { background: #e3f2fd; color: #0d47a1; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+    .payment-right { padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
+    .compliance-item { display: flex; gap: 0.8rem; align-items: flex-start; margin-bottom: 1.5rem; font-size: 0.9rem; color: #555; }
+    .checkmark { color: #00c853; font-weight: bold; }
+    .secure-row { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; font-size: 0.8rem; color: #888; border-top: 1px solid #eee; padding-top: 1.5rem; }
+    
+    /* Responsive adjustment for header */
+    @media (max-width: 900px) {
+        header { grid-template-columns: 1fr; gap: 2rem; }
+        .course-grid { grid-template-columns: 1fr; }
+    }
+</style>
+<!-- Import Google's 3D Model Viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</head>
+<body>
+<nav>
+    <div class="logo">Sveriges Arkitekter AI Course</div>
+    <!-- Buttons removed from here -->
+</nav>
+
+<header>
+    <!-- Left: Content & CTA -->
+    <div class="hero-content">
+        <div class="prop-label">The 2025 Curriculum</div>
+        <h1>Architecture is<br>Changing.<br>Change with it.</h1>
+        <p class="subtitle">The game is changing and we are invited to rewrite the rules. Produce more efficiently, with higher quality and make things that were previously impossible.</p>
+        
+        <!-- Vertical Button Stack (Uniform Width) -->
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;">
+            
+            <!-- Button 1 -->
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="btn-hero" onclick="toggleGrid()" style="width: 220px;">Go to modules</button>
+                <span style="font-size: 0.9rem; color: #666;">• 1 Year Access (Lifetime Access? Discuss)</span>
+            </div>
+
+            <!-- Button 2 -->
+            <button class="btn-hero" onclick="toggleDashboard()" style="width: 220px;">Member Login</button>
+            
+            <!-- Button 3 -->
+            <button class="btn-hero" onclick="toggleModal('payment')" style="width: 220px;">Get Access</button>
+        </div>
+    </div>
+
+    <!-- Right: Course Overview Video Placeholder -->
+    <div class="hero-video-container" onclick="openPlayer('Intro')">
+        <div class="play-btn-large">▶</div>
+        <div style="position: absolute; bottom: 1.5rem; left: 1.5rem; color: white;">
+            <div style="font-weight: 600;">Course Overview (We could also put interactive elements like images with sliders and rotatable 3D objects here)</div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">2:45 • Watch Trailer</div>
+        </div>
+    </div>
+</header>
+
+<!-- UPDATED: Added ID and Back Button -->
+<div id="grid-view" class="grid-wrapper">
+    
+    <!-- Header for the Grid View -->
+    <div style="max-width: var(--container-width); margin: 0 auto 2rem auto; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">The Curriculum</h2>
+            <p style="color: #666;">Select a module to preview.</p>
+        </div>
+        <button onclick="toggleGrid()" style="border: none; background: none; font-size: 1rem; color: #666; cursor: pointer;">✕ Close View</button>
+    </div>
+
+    <section class="course-grid">
+        
+        <!-- CARD 01 -->
+        <div class="card" onclick="openPlayer('ImageGen')">
+            <div class="card-content">
+                <div style="font-family: monospace; color: #888; font-size: 0.75rem; margin-bottom: 0.5rem;">MODULE 01</div>
+                <h3>Better Images Faster</h3>
+                <p>Produce and communicate faster and upgrade your renders. (Our previous course together)</p>
+            </div>
+            <div class="card-visual">
+                <img src="images/01.jpg" alt="Module 1">
+            </div>
+        </div>
+
+        <!-- CARD 02 -->
+        <div class="card" onclick="openPlayer('VibeCoding')">
+            <div class="card-content">
+                <div style="font-family: monospace; color: #888; font-size: 0.75rem; margin-bottom: 0.5rem;">MODULE 02</div>
+                <h3>Vibe Coding</h3>
+                <p>The web is a different place today. With vibe coding, it becomes a platform for presentations.</p>
+            </div>
+            <div class="card-visual">
+                <img src="images/02.jpg" alt="Module 2">
+            </div>
+        </div>
+
+        <!-- CARD 03 -->
+        <div class="card" onclick="openPlayer('DeepResearch')">
+            <div class="card-content">
+                <div style="font-family: monospace; color: #888; font-size: 0.75rem; margin-bottom: 0.5rem;">MODULE 03</div>
+                <h3>Competition Research & AI Search</h3>
+                <p>Make good faster decisions when tailored information comes to you instead of you going to the information.</p>
+            </div>
+            <div class="card-visual">
+                <img src="images/03.jpg" alt="Module 3">
+            </div>
+        </div>
+
+        <!-- CARD 04 -->
+        <div class="card" onclick="openPlayer('ImageTo3D')">
+            <div class="card-content">
+                <div style="font-family: monospace; color: #888; font-size: 0.75rem; margin-bottom: 0.5rem;">MODULE 04</div>
+                <h3>3D Generation</h3>
+                <p>Create scale figure, furniture and reliefs from single images.</p>
+            </div>
+            <div class="card-visual">
+                <img src="images/04.jpg" alt="Module 4">
+            </div>
+        </div>
+
+        <!-- CARD 05 -->
+        <div class="card" onclick="openPlayer('Video')">
+            <div class="card-content">
+                <div style="font-family: monospace; color: #888; font-size: 0.75rem; margin-bottom: 0.5rem;">MODULE 05</div>
+                <h3>Video Presentations</h3>
+                <p>When the future is tangible our audience affirm our proposals. Make projects immersive with short films.</p>
+            </div>
+            <div class="card-visual">
+                <img src="images/05.jpg" alt="Module 5">
+            </div>
+        </div>
+
+        <!-- CARD 06 -->
+        <div class="card" onclick="openPlayer('Workflow')">
+            <div class="card-content">
+                <div style="font-family: monospace; color: #888; font-size: 0.75rem; margin-bottom: 0.5rem;">MODULE 06</div>
+                <h3>The Studio Workflow</h3>
+                <p>Synthesis. Combining all tools into a pipeline. (Might be replaced or deleted)</p>
+            </div>
+            <div class="card-visual">
+                <img src="images/06.jpg" alt="Module 6">
+            </div>
+        </div>
+
+    </section>
+</div>
+
+    <footer>
+        <div>© 2025 Architecture AI Institute. All rights reserved.</div>
+        <div>
+            <span style="margin-right: 2rem; cursor: pointer;" onclick="toggleModal('license')">Terms of Use</span>
+            <span style="cursor: pointer;">Privacy Policy</span>
+        </div>
+    </footer>
+
+    <!-- === COURSE PLAYER === -->
+<div id="course-player" class="course-player-overlay"> 
+    
+<!-- 1. LEFT SIDEBAR (Light) -->
+    <div class="player-sidebar">
+        <div style="padding: 1.5rem; border-bottom: 1px solid #eee;">
+            <div style="font-weight: 700; font-size: 0.9rem;">COURSE MAP</div>
+        </div>
+        <div class="module-list">
+            
+            <!-- Basic Section -->
+            <div class="sidebar-section-title">SECTION 1: FUNDAMENTALS</div>
+            
+            <div class="module-item active">
+                <div><h4>01. Introduction & Setup</h4><span>4 min</span></div>
+                <div class="play-icon">▶</div>
+            </div>
+            <div class="module-item">
+                <div><h4>02. Interface Basics</h4><span>12 min</span></div>
+                <div class="play-icon">▶</div>
+            </div>
+            <div class="module-item">
+                <div><h4>03. Prompting Logic</h4><span>15 min</span></div>
+                <div class="play-icon">▶</div>
+            </div>
+
+            <!-- Advanced Section -->
+            <div class="sidebar-section-title">SECTION 2: ADVANCED WORKFLOWS</div>
+            
+            <div class="module-item">
+                <div><h4>04. Multi-Layer Composing</h4><span>25 min</span></div>
+                <div class="play-icon">▶</div>
+            </div>
+            <div class="module-item">
+                <div><h4>05. LoRA Training</h4><span>30 min</span></div>
+                <div class="play-icon">▶</div>
+            </div>
+            <div class="module-item">
+                <div><h4>06. Client Presentation</h4><span>18 min</span></div>
+                <div class="play-icon">▶</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. RIGHT MAIN AREA (Black) -->
+    <div class="player-main">
+        
+        <!-- Top Nav -->
+        <div class="player-top-nav">
+            <div class="back-link" onclick="closePlayer()">
+                <span>←</span> <span>Back to Dashboard</span>
+            </div>
+            <div>
+                <h2 id="player-top-title" style="font-size: 1.2rem; margin: 0;">Module Title</h2>
+            </div>
+            <!-- Empty div to maintain centered layout -->
+            <div style="width: 100px;"></div>
+        </div>
+
+        <!-- The "Stage" (Interactive Left / Video Right) -->
+        <div class="player-stage">
+            
+            <!-- LEFT: Interactive Part -->
+            <div>
+                <div style="margin-bottom: 1rem; color: var(--accent); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Interactive Workspace</div>
+                
+                <!-- The Toy Container -->
+                <div id="preview-toy-container" class="media-container" style="background: #151515;">
+                    <!-- JS injects toy here -->
+                </div>
+
+                <!-- Description Text Below -->
+                <div class="stage-description">
+                    <p id="player-hero-desc">Interactive description goes here.</p>
+                    <p style="margin-top:0.5rem; opacity: 0.6; font-size: 0.8rem;">Use your mouse to interact with the viewport above. Changes are saved locally.</p>
+                </div>
+            </div>
+
+            <!-- RIGHT: Video Part -->
+            <div>
+                <div style="margin-bottom: 1rem; color: #666; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Lesson Video</div>
+                
+                <div class="media-container" style="display: flex; align-items: center; justify-content: center; background: #000;">
+                    <div style="text-align: center; cursor: pointer; color: white;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">▶</div>
+                        <div style="font-size: 0.9rem; color: #aaa;">Watch High-Res Stream (4K)</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Lower Content: Tabs & Syllabus -->
+        <div class="player-content-wrapper">
+            <div class="dark-tabs">
+                <div class="dark-tab active" onclick="switchTab('overview')">Syllabus & Notes</div>
+                <div class="dark-tab" onclick="switchTab('licenses')">Licenses & Usage</div>
+                <!-- UPDATED: Renamed Tab -->
+                <div class="dark-tab" onclick="switchTab('downloads')">Downloads & Links</div>
+                <div class="dark-tab" onclick="switchTab('costs')">Software Costs</div>
+            </div>
+
+            <!-- TAB 1: Syllabus -->
+            <div id="tab-overview" class="content-area">
+                <h3 style="color: white; margin-bottom: 1rem;">Lesson Notes</h3>
+                <p style="color: #aaa; max-width: 800px;">
+                    This module covers the core principles of the chosen topic. Ensure you have the latest version of the software installed before proceeding.
+                    <br><br>
+                    <strong>Key Takeaways:</strong>
+                    <ul style="color: #aaa; margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;">
+                        <li>Understanding the interface and basic controls.</li>
+                        <li>Exporting high-fidelity assets for client presentation.</li>
+                        <li>Optimizing geometry for web-based viewers.</li>
+                    </ul>
+                </p>
+            </div>
+
+            <!-- TAB 2: Licenses -->
+            <div id="tab-licenses" class="content-area hidden">
+                <h3 style="color: white; margin-bottom: 1.5rem;">Commercial Usage & Terms</h3>
+                <p style="color: #888; margin-bottom: 2rem; max-width: 600px; font-size: 0.9rem;">
+                    Understanding ownership is critical for professional practice. Below are the direct links to the Terms of Service for the tools used in this curriculum.
+                </p>
+
+                <table class="pricing-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Tool Name</th>
+                            <th style="width: 30%;">License Model</th>
+                            <th style="width: 30%;">Official Terms</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: #232323;">MJ</span>
+                                    <span>Midjourney</span>
+                                </div>
+                            </td>
+                            <td>Commercial Ownership</td>
+                            <td><a href="#" style="color: var(--accent); text-decoration: none; font-weight: 500;">Read Policy ↗</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: #e3f2fd; color: #0044cc;">Mg</span>
+                                    <span>Magnific AI</span>
+                                </div>
+                            </td>
+                            <td>Commercial Allowed</td>
+                            <td><a href="#" style="color: var(--accent); text-decoration: none; font-weight: 500;">Read Policy ↗</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: #10a37f; color: white;">CP</span>
+                                    <span>ChatGPT</span>
+                                </div>
+                            </td>
+                            <td>User Owns Output</td>
+                            <td><a href="#" style="color: var(--accent); text-decoration: none; font-weight: 500;">Read Policy ↗</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: #6200ea; color: white;">RW</span>
+                                    <span>Runway ML</span>
+                                </div>
+                            </td>
+                            <td>Standard Commercial</td>
+                            <td><a href="#" style="color: var(--accent); text-decoration: none; font-weight: 500;">Read Policy ↗</a></td>
+                        </tr>
+                        <!-- Course Assets Row -->
+                        <tr style="border-top: 2px solid #333;">
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: white; color: black; border: 1px solid #555;">AI</span>
+                                    <span style="font-weight: 600; color: white;">Course Assets</span>
+                                </div>
+                            </td>
+                            <td>Royalty Free / Educ.</td>
+                            <td><span style="color: #666; font-size: 0.9rem;">Included in PDF</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB 3: Downloads -->
+            <div id="tab-downloads" class="content-area hidden">
+                
+                <!-- Grid Layout: Files (Left) | Links (Right) -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;">
+                    
+                    <!-- Left Column: Module Files -->
+                    <div>
+                        <h3 style="color: white; margin-bottom: 1.5rem;">Module Files</h3>
+                        <div style="margin-bottom: 2rem;">
+                            <!-- File 1 -->
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding: 1.2rem 0; border-bottom: 1px solid #222;">
+                                <div style="display:flex; align-items:center; gap: 1rem;">
+                                    <div style="background:#222; width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:4px; color: #888;">ZIP</div>
+                                    <div>
+                                        <div style="color: white; font-weight: 500;">Project_Assets_v2.zip</div>
+                                        <div style="color: #666; font-size: 0.8rem;">Models & Textures • 245 MB</div>
+                                    </div>
+                                </div>
+                                <button style="background: transparent; border: 1px solid #444; color: white; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Download</button>
+                            </div>
+                            <!-- File 2 -->
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding: 1.2rem 0; border-bottom: 1px solid #222;">
+                                <div style="display:flex; align-items:center; gap: 1rem;">
+                                    <div style="background:#222; width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:4px; color: #888;">PDF</div>
+                                    <div>
+                                        <div style="color: white; font-weight: 500;">Lecture_Slides.pdf</div>
+                                        <div style="color: #666; font-size: 0.8rem;">Presentation Deck • 12 MB</div>
+                                    </div>
+                                </div>
+                                <button style="background: transparent; border: 1px solid #444; color: white; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Download</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Curated Resources (Reduced to 2) -->
+                    <div>
+                        <h3 style="color: white; margin-bottom: 1.5rem;">Curated Resources</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <a href="#" class="resource-link">
+                                <div><strong>Midjourney Web</strong><span>Image Gen Platform</span></div>
+                                <div style="font-size: 1.2rem;">↗</div>
+                            </a>
+                            <a href="#" class="resource-link">
+                                <div><strong>CivitAI</strong><span>LoRA Models</span></div>
+                                <div style="font-size: 1.2rem;">↗</div>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 4: Costs -->
+            <div id="tab-costs" class="content-area hidden">
+                <h3 style="color: white; margin-bottom: 1.5rem;">Estimated Monthly Tooling Costs</h3>
+                <p style="color: #888; margin-bottom: 2rem; max-width: 600px; font-size: 0.9rem;">
+                    These tools are third-party services. Prices are subject to change by the vendors. We recommend the "Standard" tiers for professional architectural work.
+                </p>
+
+                <table class="pricing-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Tool Name</th>
+                            <th style="width: 30%;">Recommended Plan</th>
+                            <th style="width: 30%;">Est. Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: #232323;">MJ</span>
+                                    <span>Midjourney</span>
+                                </div>
+                            </td>
+                            <td>Standard Plan</td>
+                            <td class="price-tag">$30 / mo</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: #e3f2fd; color: #0044cc;">Mg</span>
+                                    <span>Magnific AI</span>
+                                </div>
+                            </td>
+                            <td>Pro Plan</td>
+                            <td class="price-tag">$39 / mo</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: #10a37f; color: white;">CP</span>
+                                    <span>ChatGPT Plus</span>
+                                </div>
+                            </td>
+                            <td>Plus (GPT-4)</td>
+                            <td class="price-tag">$20 / mo</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span class="tool-icon" style="background: #6200ea; color: white;">RW</span>
+                                    <span>Runway ML</span>
+                                </div>
+                            </td>
+                            <td>Standard</td>
+                            <td class="price-tag">$12 / mo</td>
+                        </tr>
+                        <tr style="border-top: 2px solid #333;">
+                            <td><strong style="color: white;">TOTAL ESTIMATE</strong></td>
+                            <td></td>
+                            <td class="price-tag" style="color: var(--accent);">$101 / mo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <!-- === DASHBOARD OVERLAY (Popup) === -->
+    <div id="dashboard-overlay">
+        
+        <div class="dash-modal-box">
+            <!-- Close 'X' Button -->
+            <span style="position:absolute; top:1rem; right:1rem; cursor:pointer; z-index:10; padding:10px; font-size: 1.2rem; color: #999;" onclick="toggleDashboard()">✕</span>
+
+            <div class="dash-header">
+                <div>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; line-height: 1;">Firm Dashboard</h1>
+                    <p style="color: #666;">Manage your team's access and track CPD progress.</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 600;">Bjarke Ingels Group</div>
+                    <div style="color: #888; font-size: 0.9rem;">Enterprise Plan (50 Seats)</div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-number">42</div><div class="stat-label">Active Learners</div></div>
+                <div class="stat-card"><div class="stat-number">156h</div><div class="stat-label">Total Hours Watched</div></div>
+                <div class="stat-card"><div class="stat-number">12</div><div class="stat-label">Certificates Issued</div></div>
+                <div class="stat-card"><div class="stat-number" style="color: var(--accent);">8</div><div class="stat-label">Seats Available</div></div>
+            </div>
+
+            <div class="team-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.1rem;">Team Progress</h3>
+                    <button class="btn-primary" style="font-size: 0.85rem; padding: 0.6rem 1rem;">+ Invite Member</button>
+                </div>
+                
+                <table class="team-table">
+                    <thead>
+                        <tr>
+                            <th>Architect</th>
+                            <th>Role</th>
+                            <th>Progress</th>
+                            <th>Last Active</th>
+                            <th>Certificate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 500;">Sarah Jenkins</td>
+                            <td>Senior Architect</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:0.5rem;">
+                                    <div style="width: 100px; height: 6px; background: #eee; border-radius: 3px;">
+                                        <div style="width: 100%; height: 100%; background: #00c853; border-radius: 3px;"></div>
+                                    </div>
+                                    <span>100%</span>
+                                </div>
+                            </td>
+                            <td>2 hrs ago</td>
+                            <td>
+                                <button class="btn-generate" onclick="generateCertificate(this)">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Auto-Generate PDF
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> 
+        </div>
+    </div>
+
+<!-- === PAYMENT MODAL (Now correctly placed outside) === -->
+<div id="modal-payment" class="modal-overlay">
+    <div class="modal-content" style="width: 950px; padding: 0; overflow: hidden; border-radius: 8px;">
+        <span style="position:absolute; top:1rem; right:1rem; cursor:pointer; z-index:10; padding:10px;" onclick="toggleModal('payment')">✕</span>
+        
+        <div class="payment-split">
+            <!-- Left Side -->
+            <div class="payment-left">
+                <div>
+                    <h3 style="margin-bottom: 0.5rem;">Global Access Pass</h3>
+                    <div style="font-size: 3.5rem; font-weight: 700; letter-spacing: -0.03em;">$499</div>
+                    <div style="color: #666; margin-bottom: 3rem;">One-time payment • Lifetime access</div>
+                    
+                    <div class="paddle-box">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="paddle-badge">Merchant of Record</span>
+                            <svg height="20" viewBox="0 0 85 24" fill="none">
+                                <path d="M10.5 2C15.2 2 19 5.8 19 10.5V22H15V10.5C15 8 13 6 10.5 6C8 6 6 8 6 10.5V22H2V10.5C2 5.8 5.8 2 10.5 2Z" fill="#000"/>
+                                <text x="24" y="18" font-family="Arial, sans-serif" font-weight="bold" font-size="16" fill="#000">Paddle</text>
+                            </svg>
+                        </div>
+                        <p style="font-size: 0.85rem; line-height: 1.5; color: #333; margin-top: 0.5rem;">
+                            <strong>Global Tax Compliance.</strong><br>
+                            Paddle automatically calculates, collects, and remits VAT & Sales Tax for 200+ jurisdictions. 
+                            <br><br>
+                            <span style="color: #0044cc;">✓ The Association holds zero tax liability.</span>
+                        </p>
+                    </div>
+                </div>
+                <div style="font-size: 0.75rem; color: #999; margin-top: auto;">Encrypted 256-bit SSL connection</div>
+            </div>
+
+            <!-- Right Side -->
+            <div class="payment-right">
+                <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem;">Secure Checkout</h2>
+                <div style="margin-bottom: 2rem;">
+                    <div class="compliance-item"><div class="checkmark">✓</div><div><strong>Instant B2B Invoicing</strong><br><span style="color:#888; font-size:0.85rem;">Valid tax invoices generated automatically.</span></div></div>
+                    <div class="compliance-item"><div class="checkmark">✓</div><div><strong>Local Currency Support</strong><br><span style="color:#888; font-size:0.85rem;">Pay in USD, EUR, GBP, or 20+ currencies.</span></div></div>
+                </div>
+                <form onsubmit="event.preventDefault(); alert('Redirecting to Paddle...');">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">Email Address</label>
+                    <input type="email" required placeholder="architect@firm.com" style="width: 100%; padding: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 1.5rem; font-size: 1rem;">
+                    <button class="btn-primary" style="width: 100%; padding: 1rem; font-size: 1rem; font-weight: 500; display: flex; justify-content: center; align-items: center; gap: 0.5rem;">
+                        <span>Continue to Payment</span><span>→</span>
+                    </button>
+                </form>
+                <div class="secure-row">
+                    <span>Powered by <strong>Paddle</strong></span><span style="height: 15px; border-left: 1px solid #ccc;"></span><span>GDPR Compliant</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // --- NAVIGATION & MODALS ---
+        function toggleModal(id) {
+            const el = document.getElementById('modal-' + id);
+            if(el) {
+                el.classList.toggle('active');
+                if(el.classList.contains('active')) {
+                    // Prevent scrolling and add padding to stop layout shift
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.paddingRight = '15px'; 
+                    
+                    // Also fix the sticky nav jump
+                    document.querySelector('nav').style.paddingRight = 'calc(4rem + 15px)';
+                } else {
+                    // Restore scrolling and remove padding
+                    document.body.style.overflow = 'auto';
+                    document.body.style.paddingRight = '0';
+                    
+                    // Restore nav padding
+                    document.querySelector('nav').style.paddingRight = '4rem';
+                }
+            }
+        }
+
+        function toggleDashboard() {
+            const dash = document.getElementById('dashboard-overlay');
+            if (!dash) return;
+            
+            // Toggle the 'active' class (which now controls display: flex)
+            dash.classList.toggle('active');
+
+            if (dash.classList.contains('active')) {
+                // Lock Scroll
+                document.body.style.overflow = 'hidden';
+                document.body.style.paddingRight = '15px'; // Prevent layout shift
+                document.querySelector('nav').style.paddingRight = 'calc(4rem + 15px)';
+            } else {
+                // Unlock Scroll
+                document.body.style.overflow = 'auto';
+                document.body.style.paddingRight = '0';
+                document.querySelector('nav').style.paddingRight = '4rem';
+            }
+        }
+
+        function toggleGrid() {
+            const grid = document.getElementById('grid-view');
+            grid.classList.toggle('active');
+            
+            // Handle scrolling lock
+            if (grid.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- PLAYER LOGIC ---
+        
+        // Global variables to track interactive state so we can clean up
+        let vibeRotateHandler = null;
+        let vibeUpHandler = null;
+
+        function openPlayer(moduleKey) {
+            const player = document.getElementById('course-player');
+            player.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // 1. Set Titles & Descriptions
+            const titles = { 'ImageGen': 'Image Generation', 'VibeCoding': 'Vibe Coding', 'DeepResearch': 'Deep Research', 'ImageTo3D': 'Image to 3D', 'Video': 'Image to Video', 'Workflow': 'Studio Workflow' };
+            
+            const descs = {
+                'ImageGen': 'These videos will show you how you can generate references for communicating visually with clients, how to turn line sketches into perspectives and multiple advance techniques to upgrade the quality of your renders and add/remove objects.',
+                'VibeCoding': 'In the video you will learn how to make a website as a presentation. In this video group you will learn how to launch a website with an interactive 3d model which you can use to communicate with your client. (There will be more vibe coding content when the module is launched, this is just an example)',
+                'DeepResearch': 'With Deep Research we can make information come to us. These videos will show you how I used deep research to heavily influence the research in a competition proposal. They will also show you how you can use large language models to search in ways that were impossible before AI, e.g. allowing us to make accurate budgets quickly.',
+                'ImageTo3D': 'Turn static images into rotatable 3D assets. Toggle between different generated results using the buttons above.',
+                'Video': 'Video models allow us to turn prompts and images into short videos. With the new Google Veo 4 we can generate up to 60 second clips. This allows us to make architecture presentations in the form of short films, making the experience of our proposals more immersive. (I do not have a good video reference with newer models, so the one above is just a placeholder to show video and audio quality. Make sure to turn on sound.)'
+            };
+
+            document.getElementById('player-top-title').innerText = titles[moduleKey] || moduleKey;
+            document.getElementById('player-hero-desc').innerText = descs[moduleKey] || "Explore the interactive elements above.";
+
+            // 2. Reset Tabs
+            switchTab('overview');
+
+            // 3. Inject Interactive Toys
+            const container = document.getElementById('preview-toy-container');
+            container.innerHTML = ''; 
+
+            // CLEANUP: Remove old window listeners
+            if(vibeRotateHandler) window.removeEventListener('mousemove', vibeRotateHandler);
+            if(vibeUpHandler) window.removeEventListener('mouseup', vibeUpHandler);
+
+            if(moduleKey === 'ImageGen') {
+                // 1. Define Image Sets
+                const imgSets = [
+                    { 
+                        name: 'Clean Up',
+                        before: 'images/07.jpg', after: 'images/08.jpg',
+                        position: 'center' 
+                    },
+                    { 
+                        name: 'Improve Quality',
+                        before: 'images/13.jpg', after: 'images/14.jpg',
+                        position: 'top'
+                    },
+                    { 
+                        name: 'Add Objects',
+                        before: 'images/11.jpg', after: 'images/12.jpg',
+                        position: 'bottom'
+                    },
+                ];
+
+                // 2. Inject HTML (With Pills & Arrows)
+                container.innerHTML = `
+                    <div class="ba-container" id="ba-container-active">
+                        <img src="${imgSets[0].before}" class="ba-img before" id="ba-img-before" style="object-position: ${imgSets[0].position}">
+                        <img src="${imgSets[0].after}" class="ba-img after" id="ba-img-after" style="clip-path: inset(0 50% 0 0); object-position: ${imgSets[0].position}">
+                        
+                        <!-- The Pills (This adds the text labels) -->
+                        <div class="ba-pill p-before">Before</div>
+                        <div class="ba-pill p-after">After</div>
+
+                        <!-- The Handle -->
+                        <div class="ba-handle" id="ba-handle-active" style="left: 50%;">
+                            <div class="ba-arrows">‹&nbsp;&nbsp;›</div>
+                        </div>
+
+                        <div class="vibe-nav">
+                            <button class="vibe-btn active" onclick="switchBaImage(0, this)">Clean Up</button>
+                            <button class="vibe-btn" onclick="switchBaImage(1, this)">Improve Quality</button>
+                            <button class="vibe-btn" onclick="switchBaImage(2, this)">Add Objects</button>
+                        </div>
+                    </div>`;
+                
+                // 3. Logic
+                requestAnimationFrame(() => {
+                    const c = document.getElementById('ba-container-active');
+                    const afterImg = document.getElementById('ba-img-after');
+                    const h = document.getElementById('ba-handle-active');
+                    
+                    if(c && afterImg && h) {
+                        const updateSlider = (clientX) => {
+                            const rect = c.getBoundingClientRect();
+                            let x = clientX - rect.left;
+                            if(x < 0) x = 0; 
+                            if(x > rect.width) x = rect.width;
+                            const percent = (x / rect.width) * 100;
+                            afterImg.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
+                            h.style.left = percent + '%';
+                        };
+
+                        c.addEventListener('mousemove', (e) => updateSlider(e.clientX));
+                        c.addEventListener('mouseleave', (e) => updateSlider(e.clientX));
+                    }
+                    
+                    window.switchBaImage = (index, btn) => {
+                        const set = imgSets[index];
+                        const before = document.getElementById('ba-img-before');
+                        const after = document.getElementById('ba-img-after');
+                        
+                        before.src = set.before;
+                        after.src = set.after;
+                        before.style.objectPosition = set.position;
+                        after.style.objectPosition = set.position;
+                        
+                        document.querySelectorAll('.vibe-nav .vibe-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    };
+                });
+
+            } else if (moduleKey === 'VibeCoding') {
+                // The 3 Local Models
+                const models = [
+                    { src: '3d/01.glb', label: 'Model 01' },
+                    { src: '3d/02.glb', label: 'Model 02' },
+                    { src: '3d/03.glb', label: 'Model 03' }
+                ];
+
+                container.innerHTML = `
+                    <div style="width:100%; height:100%; position:relative; background: #1a1a1a;">
+                        <model-viewer 
+                            id="vibe-viewer"
+                            src="${models[0].src}" 
+                            alt="3D Model" 
+                            
+                            /* UPDATED: Locks camera to Origin (0,0,0) to stop Horizon Jump */
+                            camera-target="0m 0m 0m" 
+                            /* OPTIONAL: Sets fixed angle (45deg) and height (75deg) */
+                            camera-orbit="45deg 75deg auto"
+                            
+                            shadow-intensity="1"
+                            camera-controls 
+                            auto-rotate
+                            style="width: 100%; height: 100%;"
+                        ></model-viewer>
+                        
+                        <div style="position:absolute; bottom:3rem; right:1rem; color:white; background:rgba(0,0,0,0.5); padding:4px 8px; font-size:0.7rem; border-radius:4px;">Interactive GLB</div>
+
+                        <div class="vibe-nav">
+                            <button class="vibe-btn active" onclick="switchVibeModel(0, this)">Model 01</button>
+                            <button class="vibe-btn" onclick="switchVibeModel(1, this)">Model 02</button>
+                            <button class="vibe-btn" onclick="switchVibeModel(2, this)">Model 03</button>
+                        </div>
+                    </div>`;
+
+                // Logic to switch the model source
+                window.switchVibeModel = (index, btn) => {
+                    const viewer = document.getElementById('vibe-viewer');
+                    if(viewer) viewer.src = models[index].src;
+                    
+                    // Update Button Active State
+                    document.querySelectorAll('.vibe-nav .vibe-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                };
+
+            } else if (moduleKey === 'ImageTo3D') {
+                // The 3 Local AI Generated Models
+                const genModels = [
+                    { src: '3d/04.glb', label: 'Gen 1' },
+                    { src: '3d/05.glb', label: 'Gen 2' },
+                    { src: '3d/06.glb', label: 'Gen 3' }
+                ];
+
+                container.innerHTML = `
+                    <div style="width:100%; height:100%; position:relative; background: #313131;">
+                        <model-viewer 
+                            id="img3d-viewer"
+                            src="${genModels[0].src}" 
+                            alt="AI Generated Model" 
+                            
+                            /* UPDATED: Studio Lighting Settings */
+                            environment-image="legacy"  /* Creates highlights on the leather/fabric */
+                            tone-mapping="aces"         /* Cinematic contrast */
+                            exposure="1.5"              /* Brighter to see dark details */
+                            shadow-intensity="1.2"      
+                            shadow-softness="0.8"
+                            
+                            /* Camera Settings */
+                            bounds="tight" 
+                            camera-target="0m 0m 0m" 
+                            camera-controls 
+                            auto-rotate
+                            
+                            style="width: 100%; height: 100%;"
+                        ></model-viewer>
+                        
+                        <div style="position:absolute; bottom:3rem; right:1rem; color:white; background:rgba(0,0,0,0.5); padding:4px 8px; font-size:0.7rem; border-radius:4px;">AI Generated GLB</div>
+
+                        <div class="vibe-nav">
+                            <button class="vibe-btn active" onclick="switchGenModel(0, this)">Gen 01</button>
+                            <button class="vibe-btn" onclick="switchGenModel(1, this)">Gen 02</button>
+                            <button class="vibe-btn" onclick="switchGenModel(2, this)">Gen 03</button>
+                        </div>
+                    </div>`;
+
+                // Logic to switch the model source
+                window.switchGenModel = (index, btn) => {
+                    const viewer = document.getElementById('img3d-viewer');
+                    if(viewer) viewer.src = genModels[index].src;
+                    
+                    // Update Button Active State
+                    document.querySelectorAll('.vibe-nav .vibe-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                };
+
+           } else if (moduleKey === 'Video') {
+                container.innerHTML = `
+                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#000;">
+                        <!-- UPDATED: Using Official OpenAI Sora Architecture Video (Guaranteed to work) -->
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            src="https://www.youtube.com/embed/JhH3uxcdM1M?autoplay=1&mute=1&controls=1&modestbranding=1&rel=0" 
+                            title="YouTube video player" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            referrerpolicy="strict-origin-when-cross-origin" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>`;
+
+            } else if (moduleKey === 'DeepResearch') {
+                container.innerHTML = `
+                    <div class="dr-container">
+                        <!-- Top Row: Input -> Finding -->
+                        <div class="dr-flow-row">
+                            <div class="dr-box">
+                                <div class="dr-label">1. INPUT </div>
+                                <div class="dr-content">
+                                    "What do we need to know about hay for this competition?"
+                                </div>
+                            </div>
+                            
+                            <div class="dr-arrow-right">→</div>
+                            
+                            <div class="dr-box">
+                                <div class="dr-label" style="color: var(--accent);">2. AI AGENT FINDING</div>
+                                <div class="dr-content">
+                                    Found Section 12.4 in Docs:
+                                    <span class="dr-highlight">"Cereal Straw – a related material often confused with hay – is abundant in Denmark as well. [...] In fact, “hay” bales used in construction are often actually straw, because straw has low nutritional value and thus fewer pest/mold issues than true hay. It is also cheaper."</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom: Final Output -->
+                        <div class="dr-box" style="flex: 0 0 auto; height: auto; border-color: #444;">
+                            <div class="dr-label" style="color: white; border-bottom-color: #444;">3. FINAL COMPETITION SLIDE</div>
+                            <div style="display:flex; gap:1.5rem; align-items:center;">
+                                <div style="width: 50px; height: 50px; background: #333; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🏗️</div>
+                                <div class="dr-content" style="font-size: 0.9rem;">
+                                    <strong>Strategy Generated:</strong> Use straw bales instead of hay.<span style="color: #666;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+            } else {
+                container.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#555; background:#111;">
+                        <div style="font-size:2rem; margin-bottom:1rem; opacity:0.5;">⚡</div>
+                        <div>Interactive Preview Loading...</div>
+                    </div>`;
+            }
+        }
+        function closePlayer() {
+            document.getElementById('course-player').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function switchTab(tabName) {
+            // 1. Hide all content areas
+            document.querySelectorAll('.content-area').forEach(el => el.classList.add('hidden'));
+            
+            // 2. Show the target content
+            const target = document.getElementById('tab-' + tabName);
+            if(target) target.classList.remove('hidden');
+            
+            // 3. Update Tab Styles
+            const tabs = document.querySelectorAll('.dark-tab');
+            
+            if(tabs.length > 0) {
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Map tab names to index positions
+                if(tabName === 'overview') tabs[0].classList.add('active');
+                if(tabName === 'licenses') tabs[1].classList.add('active');
+                if(tabName === 'downloads') tabs[2].classList.add('active');
+                // UPDATED: Now points to costs
+                if(tabName === 'costs') tabs[3].classList.add('active');
+            }
+        }
+
+        /* --- CERTIFICATE LOGIC --- */
+        function generateCertificate(btn) {
+            // 1. Loading State
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `
+                <svg class="fade-in" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                </svg> 
+                Generating...`;
+            btn.style.opacity = "0.7";
+            btn.style.cursor = "wait";
+
+            // 2. Simulate API Call (1.5 seconds)
+            setTimeout(() => {
+                // 3. Success State
+                btn.classList.add('success');
+                btn.style.opacity = "1";
+                btn.style.cursor = "pointer";
+                btn.innerHTML = `
+                    <svg class="fade-in" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    Download PDF`;
+                
+                // 4. Change click action to actual download
+                btn.onclick = () => {
+                    alert("Downloading: Certificate_AI_Architecture_2025.pdf");
+                };
+            }, 1500);
+        }
+
+        // Add this small keyframe style via JS or CSS for the spinner
+        const style = document.createElement('style');
+        style.innerHTML = `
+        @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <!-- === SIMPLE PASSWORD GATE === -->
+<div id="password-gate" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:'Inter', sans-serif;">
+    <div style="text-align:center; max-width:400px; width:90%; padding:2rem;">
+        <h2 style="font-size:1.5rem; margin-bottom:1rem; text-transform:uppercase; letter-spacing:-0.03em;">Restricted Access</h2>
+        <p style="color:#666; margin-bottom:2rem;">This mockup is private. Please enter the access code.</p>
+        
+        <form onsubmit="event.preventDefault(); checkPassword();">
+            <input type="password" id="pass-input" placeholder="Enter Password" style="width:100%; padding:1rem; border:1px solid #ccc; border-radius:4px; margin-bottom:1rem; font-size:1rem;">
+            <button type="submit" style="width:100%; padding:1rem; background:black; color:white; border:none; border-radius:4px; font-weight:600; cursor:pointer;">Enter Mockup</button>
+        </form>
+        <div id="pass-error" style="color:red; margin-top:1rem; font-size:0.9rem; display:none;">Incorrect password</div>
+    </div>
+</div>
+
+<script>
+    function checkPassword() {
+        // --- SET YOUR PASSWORD HERE ---
+        const correctPassword = "ai2026"; 
+        // ------------------------------
+
+        const input = document.getElementById('pass-input').value;
+        const gate = document.getElementById('password-gate');
+        const error = document.getElementById('pass-error');
+
+        // Check if password matches (case insensitive)
+        if(input.toLowerCase() === correctPassword) {
+            // Fade out the gate
+            gate.style.opacity = '0';
+            gate.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                gate.style.display = 'none';
+            }, 500);
+            
+            // Optional: Remember they logged in for this session
+            sessionStorage.setItem('site_access', 'granted');
+        } else {
+            error.style.display = 'block';
+            document.getElementById('pass-input').style.borderColor = 'red';
+        }
+    }
+
+    // Check if they already entered the password this session
+    if(sessionStorage.getItem('site_access') === 'granted') {
+        document.getElementById('password-gate').style.display = 'none';
+    }
+</script>
+</body>
+</html>
